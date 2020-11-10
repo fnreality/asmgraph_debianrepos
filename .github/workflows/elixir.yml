@@ -26,4 +26,8 @@ jobs:
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
     - name: Run code
-      run: elixir main.exs
+      run: |
+        elixir main.exs
+        git commit -m "auto"
+        git add . --all
+        git push origin main
