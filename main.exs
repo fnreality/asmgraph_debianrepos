@@ -214,4 +214,6 @@ asm = """
 """
 graph_map = AsmGraph.graph_adj(asm, opcodes)
 0..810901
-	|> Enum.map(& graph_map[&1] || 255)
+	|> Enum.map(& graph_map[&1] || 100)
+	|> Enum.map(& 161 + &1)
+	|> IO.puts
