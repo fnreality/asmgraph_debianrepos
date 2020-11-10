@@ -14,10 +14,11 @@ defmodule AsmGraph do
     def graph_adj(asm, opcodes) do
     	num_opcodes = map_size opcodes
     	asm
-		|> graph(opcodes)
-		|> Enum.map(fn {{source, target}, class} ->
-			{(num_opcodes * source) + target, class}
-		end)
+	    |> graph(opcodes)
+	    |> Enum.map(fn {{source, target}, class} ->
+		{(num_opcodes * source) + target, class}
+	    end)
+	    |> Map.new
     end
     def graph(asm, opcodes) do
         basic_repr = asm
@@ -98,7 +99,15 @@ defmodule AsmGraph do
 	deref_count = reg
 			|> String.graphemes
 			|> Enum.count(& &1 == "[")
-	repr_num + (deref_count * 7)
+	max_deref = 8
+	if repr_num < 0 do
+	    repr_num + (deref_count * 7)
+	else
+	    repr_num - (deref_count * 7)
+	end
+	    |> max(-50)
+	    |> min(62)
+	    |> Kernel.+(50)
     end
     def line_paths(%{op: op, gen: gen, uses: uses}, op_map) do
         targets = uses
@@ -193,3 +202,16 @@ opcodes =
 	{:error, reason} -> raise "Unable to read opcodes.csv because #{inspect reason}"
 	other -> raise "Unable to read opcodes.csv, invalid return #{inspect other}"
     end
+
+asm = """
+	    dec ecx ; this is a comment
+	    sub ebx, ecx
+	    xlatb eax
+	    movzx edx, eax
+	    imul ecx, edx
+	    hint_nop7
+	    syscall
+"""
+graph_map = AsmGraph.graph_adj(asm, opcodes)
+0..810901
+	|> Enum.map(& graph_map[&1] || 255)
