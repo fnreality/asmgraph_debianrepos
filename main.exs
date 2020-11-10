@@ -99,7 +99,6 @@ defmodule AsmGraph do
 	deref_count = reg
 			|> String.graphemes
 			|> Enum.count(& &1 == "[")
-	max_deref = 8
 	if repr_num < 0 do
 	    repr_num + (deref_count * 7)
 	else
