@@ -212,8 +212,7 @@ asm = """
 	    syscall
 """
 graph_map = AsmGraph.graph_adj(asm, opcodes)
-char_ls = 0..7 # 810901
-		|> Enum.map(& graph_map[&1] || 100)
-		|> Enum.map(& &1 + 161)
-
-File.write!("result.txt", char_ls)
+0..810901
+	|> Enum.map(& graph_map[&1] || 100)
+	|> Enum.map(& &1 + 161)
+	|> IO.puts
